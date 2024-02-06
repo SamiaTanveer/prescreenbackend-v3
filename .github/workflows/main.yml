@@ -1,0 +1,84 @@
+name: Create, publish and deploy project
+on:
+  push:
+
+    branches: ['main', 'TOOR']
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: netixsol/prescreenbackend
+jobs:
+  build-and-push-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Log in to the Container registry
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Release name
+        id: release_name
+        uses: actions/github-script@v4
+        with:
+          result-encoding: string
+          script: |
+            const branch_name = process.env.GITHUB_REF
+            const release_version = branch_name.substring(branch_name.lastIndexOf('/') +1 ,branch_name.length  )
+            process.env.VERSION = release_version
+            return release_version
+      - name: Build and push Docker image
+        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:v${{ steps.release_name.outputs.result }}
+          labels: ${{ steps.meta.outputs.labels }}
+name: Create, publish and deploy project
+on:
+  push:
+    branches: ['main', 'TOOR']
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: netixsol/prescreenbackend
+jobs:
+  build-and-push-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Log in to the Container registry
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Release name
+        id: release_name
+        uses: actions/github-script@v4
+        with:
+          result-encoding: string
+          script: |
+            const branch_name = process.env.GITHUB_REF
+            const release_version = branch_name.substring(branch_name.lastIndexOf('/') +1 ,branch_name.length  )
+            process.env.VERSION = release_version
+            return release_version
+      - name: Build and push Docker image
+        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:v${{ steps.release_name.outputs.result }}
+          labels: ${{ steps.meta.outputs.labels }}

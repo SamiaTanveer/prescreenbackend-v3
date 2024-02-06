@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <button id="btn">send message</button>
+    <button id="adminbtn2">see all messages</button>
+    <ul id="messages"></ul>
+  </body>
+  <script>
+    const socket = new WebSocket("ws://localhost:3005");
+    // const socket = new WebSocket('ws://192.168.18.60:3005');
+    console.log(socket);
+    const name = localStorage.getItem('name') || 'genral';
+    console.log(name);
+    socket.onopen = () => {
+      console.log('open from frontend');
+      socket.send(name);
+      /*socket.send(
+        JSON.stringify({
+          event: "test",
+          data: 'sfasfassada',
+        })
+      );*/
+    };
+
+    socket.onmessage = function (event) {
+      console.log('Received message:', event.data);
+    };
+
+    socket.onclose = function (event) {
+      console.log('WebSocket connection closed.');
+    };
+
+    socket.onerror = function (error) {
+      console.error('WebSocket error:', error);
+    };
+    // first button click
+    btn.onclick = () => {
+      socket.send(
+        JSON.stringify({
+          event: "test2",
+          // data: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1NTcwOGVmM2JkZTAwYWI0NmQyZTQxMSIsImVtYWlsIjoic2FtaWExMjEyMzIxQGdtYWlsLmNvbSIsInVzZXJUeXBlIjoiY2FuZGlkYXRlIiwiaWF0IjoxNzAyOTA1Nzc5LCJleHAiOjE3MDI5OTIxNzl9.mrC5oOm2pBI_DMcPRJlEYmmy-UI0fndRuAhaV7FGxoI',
+          data: {name: "sending token or key", age: '12412'},
+        }),
+      );
+      // const msg = { name: "namespace", message: "message create" };
+      // socket.send(
+      //   JSON.stringify({
+      //     event: "createMessage",
+      //     data: msg,
+      //   })
+      // );
+      // socket.onmessage = function (data) {
+      //   console.log("emitted response...", JSON.parse(data.data));
+      //   const dataa = JSON.parse(data.data);
+      // };
+    };
+
+    // admin btn click
+    adminbtn2.onclick = () => {
+      socket.send(
+        JSON.stringify({
+          event: 'findAllMessages',
+        }),
+      );
+      socket.onmessage = function (data) {
+        console.log('emitted response...all messages', JSON.parse(data.data));
+        const messages = JSON.parse(data.data);
+        appendMsgArray(messages);
+      };
+    };
+
+    function appendMsg(message) {
+      console.log(message);
+      const li = document.createElement('li');
+      li.innerText = message.name + ' ....' + message.message;
+      messages.appendChild(li);
+      console.log(messages);
+    }
+    function appendMsgArray(messagesArray) {
+      messages.innerText = '';
+      messagesArray.forEach((message) => {
+        const li = document.createElement('li');
+        li.innerText = `${message.name} .... ${message.message}`;
+        messages.appendChild(li);
+      });
+    }
+  </script>
+</html>
