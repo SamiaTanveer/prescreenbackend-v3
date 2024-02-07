@@ -67,9 +67,7 @@ import { ProjectModule } from './Projects/project.module';
       rootPath: join(__dirname, 'swagger-static'),
       serveRoot: process.env.NODE_ENV === 'development' ? '/dash' : '/api',
     }),
-    MongooseModule.forRoot(process.env.MONGO_URL!,{
-      
-    }),
+    MongooseModule.forRoot(process.env.MONGO_URL!, {}),
     CompanyModule,
     AuthModule,
     SdkModule,
@@ -144,7 +142,7 @@ import { ProjectModule } from './Projects/project.module';
     // GatewayModule,
     PermissionModule,
     NotificationModule,
-    WebGatewayModule,
+    // WebGatewayModule,
     DiscountModule,
     McqModule,
     TestModule,
